@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registered Users</title>
+    <!-- <link rel="stylesheet" href="style.css"> External CSS -->
+    <link rel="stylesheet" href="Dis.css">
+    
+</head>
+<body>
+
+    <h2>Registered Users</h2>
+
+    <!-- Excel-style Table to display user data -->
+    <button class="excel-button" onclick="exportToExcel()">Export to Excel</button>
+
+    <table id="userTable">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Age</th>
+                <th>Password</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Data will be populated here -->
+        </tbody>
+    </table>
+
+    <script>
+        // Retrieve the user data from localStorage
+        let users = JSON.parse(localStorage.getItem('users')) || [];
+
+        // Select the table body
+        let tableBody = document.querySelector('#userTable tbody');
+
+        // If there are no users, display a message
+        if (users.length === 0) {
+            tableBody.innerHTML = '<tr><td colspan="4">No users registered yet.</td></tr>';
+        } else {
+            // Iterate over the users array and create rows in the table
+            users.forEach(function(user) {
+                let row = document.createElement('tr');
+                
+                // Create table cells for each user property
+                let nameCell = document.createElement('td');
+                nameCell.textContent = user.name;
+
+                let emailCell = document.createElement('td');
+                emailCell.textContent = user.email;
+
+                let ageCell = document.createElement('td');
+                ageCell.textContent = user.age;
+
+                let passwordCell = document.createElement('td');
+                passwordCell.textContent = user.password;
+
+                // Append cells to the row
+                row.appendChild(nameCell);
+                row.appendChild(emailCell);
+                row.appendChild(ageCell);
+                row.appendChild(passwordCell);
+
+                // Append the row to the table body
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Function to export data as an Excel file (CSV)
+        function exportToExcel() {
+            let table = document.getElementById("userTable");
+            let rows = table.rows;
+            let csv = [];
+
+            // Iterate over table rows
+            for (let i = 0; i < rows.length; i++) {
+                let row = rows[i];
+                let cells = row.cells;
+                let rowData = [];
+
+                for (let j = 0; j < cells.length; j++) {
+                    rowData.push(cells[j].innerText);
+                }
+
+                csv.push(rowData.join(","));
+            }
+
+            // Create a downloadable CSV Blob and link
+            let csvFile = new Blob([csv.join("\n")], { type: "text/csv" });
+            let downloadLink = document.createElement("a");
+            downloadLink.href = URL.createObjectURL(csvFile);
+            downloadLink.download = "users_data.csv"; // CSV format
+
+            // Trigger the download
+            downloadLink.click();
+        }
+    </script>
+
+</body>
+</html>
